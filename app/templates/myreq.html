@@ -1,0 +1,86 @@
+{% include 'common_head.html' %}
+{% block content %}
+<div class="container">
+<div class="page-header">
+<h1>Hello, {{basic['user_name']}}!</h1>
+</div>
+</div>
+
+<table class="table table-hover">
+<thead>
+<tr>
+<th>需求名称</th>
+<th>提测人</th> 
+<th>提测日期</th>
+<th>测试人</th>
+<th>开测日期</th>
+<th>预计上线日期</th>
+<th>实际上线日期</th>
+<th>需求状态</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+{% for item in result %}
+<tr>
+<td>{{item['name']}}</td>
+<td>{{item['raise_man']}}</td>
+<td>{{item['raise_date']}}</td>
+<td>{{item['test_man']}}</td>
+<td>{{item['start_date']}}</td>
+<td></td>
+<td>{{item['upline_date']}}</td>
+{% if item['status'] == 1 %}
+<td>已提测</td>
+<td><button type="button" class="btn btn-primary btn-xs" onclick=claim({{item['id']}}) >认领</button></td>
+{% elif item['status'] == 2 %}
+<td>测试中</td><td><button type="button" class="btn btn-primary btn-xs" onclick=upline({{item['id']}}) >上线</button></td>
+{% else %}
+<td>已上线</td><td></td>
+{% endif %}
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+<div class="pull-right">
+<ul class="pagination">
+{% if basic['pageNum'] == 1 %}
+    <li class="disabled"><a href="#" >&laquo;</a></li>
+{% else %}
+    <li><a href="#" onclick=lastFunc()>&laquo;</a></li>
+{% endif %}
+{% if basic['pageNum']%5 != 0 %}
+{% for i in range(5) %}
+{% if basic['pageNum']%5 == (i+1)%5 %}
+    <li class="active"><a href="#">{{basic['pageNum']}}</a></li>
+{% else %}
+{% if (basic['pageNum']/5)|int*5+i+1 <= basic['totalNum'] %}
+    <li><a href="#">{{(basic['pageNum']/5)|int*5+i+1}}</a></li>
+{% endif %}
+{% endif %}
+{% endfor %}
+{% else %}
+<li><a href="#">{{basic['pageNum']-4}}</a></li>
+<li><a href="#">{{basic['pageNum']-3}}</a></li>
+<li><a href="#">{{basic['pageNum']-2}}</a></li>
+<li><a href="#">{{basic['pageNum']-1}}</a></li>
+<li class="active"><a href="#">{{basic['pageNum']}}</a></li>
+{% endif %}
+
+
+{% if basic['totalNum'] == basic['pageNum'] %}
+    <li class="disabled"><a href="#">&raquo;</a></li>
+{% else %}
+    <li><a href="#" onclick=nextFunc()>&raquo;</a></li>
+{% endif %}
+   </ul>
+</div>
+
+
+{% endblock %}
+{% block scripts %}
+<script src="../static/jquery.js"></script>
+<script src="../static/js/public.js"></script>
+{% endblock %}}

@@ -1,0 +1,141 @@
+{% include 'common_head.html' %}
+{% block content %}
+<div class="container">
+	<div class="page-header">
+		<h1>
+			<b>{{req_name}}</b>
+			<b class="nav pull-right">
+				<button id="btnAddNewReq" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addNewReqModal">新增需求</button>	
+			</b>
+		</h1>
+		<div class="modal fade" id="addNewReqModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-show="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title" id="myModalLabel">新增需求</h4>
+        </div>
+        <div class="modal-body">
+ 
+          <div class="form-group">
+            <label for="txt_content">需求内容</label>
+            <input type="text" name="txt_content" class="form-control" id="txt_content" placeholder="需求内容">
+          </div>
+          <div class="form-group">
+            <label for="txt_req_type">需求类型</label>
+            <select class="form-control" id="txt_req_type" >
+			<option>IOS/Android</option>
+			<option>IOS</option>
+			<option>Android</option>
+			</select>
+          </div>
+          <div class="form-group">
+            <label for="txt_group">项目组</label>
+            <input type="text" name="txt_group" class="form-control" id="txt_group" placeholder="微商">
+          </div>
+          <div class="form-group">
+            <label for="remarks">备注</label>
+            <input type="text" name="txt_remarks" class="form-control" id="txt_remarks" placeholder="备注">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+          <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+	</div>
+</div>
+<table class="table table-hover">
+<thead>
+<tr>
+<th width="22%" class="text-center">子需求内容</th>
+<th width="12%" class="text-center">子需求类型</th> 
+<th width="12%" class="text-center">预计上线日期</th>
+<th width="12%" class="text-center">项目组</th>
+<th width="12%" class="text-center">是否测试完毕</th>
+<th width="12%" class="text-center">责任人</th>
+<th width="18%" class="text-center">操作</th>
+</tr>
+</thead>
+<tbody>
+{% for item in result %}
+<tr>
+<td class="text-center" title={{item['content']}}>{{item['content']}}</td>
+{% if item['req_type'] == 0 %}
+<td class="text-center">IOS/Android</td>
+{% elif item['req_type'] == 1 %}
+<td class="text-center">IOS</td>
+{% else %}
+<td class="text-center">Android</td>
+{% endif %}
+<td class="text-center">{{item['pre_upline_date']}}</td>
+<td class="text-center">{{item['group_name']}}</td>
+{% if item['is_confirm'] == 1 %}
+<td class="text-center">是</td>
+{% else %}
+<td class="text-center">否</td>
+{% endif %}
+<td class="text-center">{{item['charge_man']}}</td>
+<td id={{item['detail_id']}} class="text-center">
+{% if item['is_confirm'] == 1%}
+<button type="button"  href="#" class="btn btn-primary btn-xs" >未测完</button>
+{% else %}
+<button type="button"  href="#" class="btn btn-primary btn-xs" >已测完</button>
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endblock %}
+{% block scripts %}
+<script src="../static/js/public.js"></script>
+<script>
+$(function() {
+    $('#addNewReqModal').modal({
+        keyboard: true
+    })
+});
+</script>
+<script>
+$("#btn_submit").click(function(){
+	//add_detail();
+	data = { "content": $("#txt_content").val(),"req_type":$("#txt_req_type").val(),"req_id":11,"group_id":$("#txt_group").val(),
+    	    "remarks":$("#txt_remarks").val(),"charge_man":"guxiwen"},
+	ajaxRequest("/api/addDetail2","POST","json",data);
+});
+</script>
+<script>
+function add_detail(){
+    $.ajax({
+        url: "/api/addDetail",
+        method: "POST",
+        dataType: "json",
+        data: { "content": $("#txt_content").val(),"req_type":$("#txt_req_type").val(),"req_id":11,"group_id":$("#txt_group").val(),
+        	    "remarks":$("#txt_remarks").val(),"charge_man":"guxiwen"},
+        beforeSend: function() {
+          //$("#s_"+seller_id+'_'+product_id).html('等待..');
+         // alert(version);
+         //alert($("#txt_content").val());
+        }
+      }).done(function(data) {
+        alert("ok");
+      }).fail(function(){alert("no ok");}).always(function(){alert("okok");});
+}
+</script>
+<script>
+$(":button[href='#']").click(function(){
+	detail_id = $(this).parent('td').attr('id');
+	if($(this).parent('td').prev('td').prev('td').text() == '否'){
+		action = 'upline';
+	}else{
+		action = 'offline';
+	}
+	data = {"detail_id":detail_id,"action":action}
+	ajaxRequest("/api/uplineChildRequirement","POST","json",data);
+	location.reload();
+})
+</script>
+{% endblock %}

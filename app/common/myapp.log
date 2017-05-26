@@ -1,0 +1,12 @@
+Fri, 28 Apr 2017 16:40:37 log.py[line:11] DEBUG This is debug message
+Fri, 28 Apr 2017 16:40:37 log.py[line:12] INFO This is info message
+Fri, 28 Apr 2017 16:40:37 log.py[line:13] WARNING This is warning message
+Fri, 28 Apr 2017 16:47:12 log.py[line:11] DEBUG This is debug message
+Fri, 28 Apr 2017 16:47:12 log.py[line:12] INFO This is info message
+Fri, 28 Apr 2017 16:47:12 log.py[line:13] WARNING This is warning message
+Fri, 28 Apr 2017 16:48:20 log.py[line:11] DEBUG This is debug message
+Fri, 28 Apr 2017 16:48:20 log.py[line:12] INFO This is info message
+Fri, 28 Apr 2017 16:48:20 log.py[line:13] WARNING This is warning message
+Fri, 28 Apr 2017 16:50:27 log.py[line:11] DEBUG This is debug message
+Fri, 28 Apr 2017 16:50:27 log.py[line:12] INFO This is info message
+Fri, 28 Apr 2017 16:50:27 log.py[line:13] WARNING This is warning message

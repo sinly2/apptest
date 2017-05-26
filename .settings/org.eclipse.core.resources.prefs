@@ -1,0 +1,15 @@
+eclipse.preferences.version=1
+encoding//app/__init__.py=utf-8
+encoding//app/common/log.py=utf-8
+encoding//app/common/util.py=utf-8
+encoding//app/config.py=utf-8
+encoding//app/main/ReqControllers.py=utf-8
+encoding//app/main/controllers2.py=utf-8
+encoding//app/main/views.py=utf-8
+encoding//app/main/views3.py=utf-8
+encoding//app/manage.py=utf-8
+encoding//app/models.py=utf-8
+encoding//app/models/requirements.py=utf-8
+encoding//app/models/user.py=utf-8
+encoding//app/user/controllers.py=utf-8
+encoding//app/user/views.py=utf-8

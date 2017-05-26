@@ -1,0 +1,285 @@
+{% include 'common_head.html' %}
+{% block content %}
+<div class="container">
+<div class="page-header">
+		<h1>
+			<b>需求中心</b>
+			<b class="nav pull-right">
+				<button id="btnAddNewReq" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addNewReqModal">新增需求</button>	
+			</b>
+		</h1>
+	</div>
+<div class="modal fade" id="addNewReqModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-show="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title" id="myModalLabel">新增需求</h4>
+        </div>
+        <div class="modal-body">
+ 
+          <div class="form-group">
+            <label for="txt_reqName">需求名称</label>
+            <input type="text" name="txt_reqName" class="form-control" id="txt_reqName" placeholder="需求内容">
+          </div>
+          <div class="form-group">
+            <label for="txt_version">需求版本</label>
+			<input type="text" name="txt_version" class="form-control" id="txt_version" placeholder="V3.3.3">
+          </div>
+          <div class="form-group">
+            <label for="txt_isForce">是否强升</label>
+            <select class="form-control" id="txt_isForce" >
+			<option>否</option>
+			<option>是</option>
+			</select>
+          </div>
+          <div class="form-group">
+            <label for="txt_preUplineDate">预计提审日期</label>
+            <input type="text" name="txt_preUplineDate" class="form-control" id="txt_preUplineDate" placeholder="微商">
+          </div>
+          <div class="form-group">
+            <label for="remarks">备注</label>
+            <input type="text" name="txt_remarks" class="form-control" id="txt_remarks" placeholder="备注">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+          <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+<table class="table table-hover" id="test">
+<thead>
+<tr>
+<th width="9%" class="text-center">需求名称</th>
+<th width="9%" class="text-center">创建人</th> 
+<th width="9%" class="text-center">是否强升</th> 
+<th width="9%" class="text-center">提测日期</th>
+<th width="9%" class="text-center">预计提审日期</th>
+<th width="9%" class="text-center">实际提审日期</th>
+<th width="9%" class="text-center">发布日期</th>
+<th width="9%" class="text-center">测试进度</th>
+<th width="9%" class="text-center">需求状态</th>
+<th width="20%" class="text-center">操作</th>
+</tr>
+</thead>
+<tbody>
+{% for item in reqs %}
+<tr>
+<td class="text-center" title={{item['req_name']}}>{{item['req_name']}}</td>
+<td class="text-center">{{item['create_man']}}</td>
+{% if item['is_force']==0 %}
+<td class="text-center">否</td>
+{% else %}
+<td class="text-center">是</td>
+{% endif %}
+<td class="text-center">{{item['raise_test_date']}}</td>
+<td class="text-center">{{item['pre_upline_date']}}</td>
+<td class="text-center">{{item['raise_audit_date']}}</td>
+<td class="text-center">{{item['upline_date']}}</td>
+<td class="text-center">8/9</td>
+{% if item['status']==0 %}
+<td class="text-center">待提测</td>
+<td class="text-center">
+<button type="button" class="btn btn-primary btn-xs" onclick="req_function({{item['req_id']}},'overdevelopment')">提测</button>
+<button type="button" class="btn btn-primary btn-xs" data-toggle="modal" href="#">详情</button>
+<button type="button" class="btn btn-primary btn-xs" onclick="window.open('Requirements/{{item['req_id']}}')">子需求</button>
+</td>
+{% elif item['status']==1 %}
+<td class="text-center">待提审</td>
+<td class="text-center">
+<button type="button" class="btn btn-primary btn-xs" onclick="req_function({{item['req_id']}},'overtest')">提审</button>
+<button type="button" class="btn btn-primary btn-xs" data-toggle="modal" href="#">详情</button>
+<button type="button" class="btn btn-primary btn-xs" onclick="window.open('Requirements/{{item['req_id']}}')">子需求</button>
+</td>
+{% elif item['status']==2 %}
+<td class="text-center">已提审</td>
+<td class="text-center">
+<button type="button" class="btn btn-primary btn-xs" onclick="req_function({{item['req_id']}},'overaudit')">提审通过</button>
+<button type="button" class="btn btn-primary btn-xs" onclick="req_function({{item['req_id']}},'auditback')">提审打回</button>
+<button type="button" class="btn btn-primary btn-xs" data-toggle="modal" href="#">详情</button>
+<button type="button" class="btn btn-primary btn-xs" onclick="window.open('Requirements/{{item['req_id']}}')">子需求</button>
+</td>
+{% elif item['status']==3 %}
+<td class="text-center">待发布</td>
+<td class="text-center">
+<button type="button" class="btn btn-primary btn-xs" onclick="req_function({{item['req_id']}},'upline')">发布</button>
+<button type="button" class="btn btn-primary btn-xs" data-toggle="modal" href="#">详情</button>
+<button type="button" class="btn btn-primary btn-xs" onclick="window.open('Requirements/{{item['req_id']}}')">子需求</button>
+</td>
+{% elif item['status']==4 %}
+<td class="text-center">已发布</td>
+<td class="text-center">
+<button type="button" class="btn btn-primary btn-xs" data-toggle="modal" href="#">详情</button>
+<button type="button" class="btn btn-primary btn-xs" onclick="window.open('Requirements/{{item['req_id']}}')">子需求</button>
+</td>
+{% else %}
+<td class="text-center">{{item['status']}}</td>
+<td class="text-center">
+<button type="button" class="btn btn-primary btn-xs">提测</button>
+<button type="button" class="btn btn-primary btn-xs" href="#">详情</button>
+</td>
+{% endif %}
+</tr>
+{% endfor %}
+<div class="modal fade" id="ReqModalDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-show="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title" id="myModalLabel2">需求详情</h4>
+        </div>
+        <div class="modal-body">
+ 
+          <div class="form-group">
+            <label for="txt_reqName2">需求名称</label>
+            <input type="text" name="txt_reqName2" class="form-control" id="txt_reqName2" placeholder="123">
+          </div>
+          <div class="form-group">
+            <label for="txt_version">需求版本</label>
+			<input type="text" name="txt_version2" class="form-control" id="txt_version2" placeholder="V3.3.3">
+          </div>
+          <div class="form-group">
+            <label for="txt_isForce2">是否强升</label>
+            <select class="form-control" id="txt_isForce2" >
+			<option>否</option>
+			<option>是</option>
+			</select>
+          </div>
+          <div class="form-group">
+            <label for="txt_preUplineDate2">预计提审日期</label>
+            <input type="text" name="txt_preUplineDate2" class="form-control" id="txt_preUplineDate2" placeholder="微商">
+          </div>
+          <div class="form-group">
+            <label for="txt_remarks2">备注</label>
+            <input type="text" name="txt_remarks2" class="form-control" id="txt_remarks2" placeholder="备注">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+          <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</tbody>
+</table>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="../static/js/public.js"></script>
+<script src="../static/js/bootstrap-datepicker.js"></script>
+<script>
+function req_list(version){
+    $.ajax({
+        url: "/api/getRequirements",
+        method: "POST",
+        dataType: "json",
+        data: { version: version},
+        beforeSend: function() {
+          //$("#s_"+seller_id+'_'+product_id).html('等待..');
+         // alert(version);
+        }
+      }).done(function(data) {
+        tbBody = '';
+        tr = '<th>需求名称</th> <th>是否强升</th> <th>提测人</th> <th>提测时间</th> <th>预计提审日期</th> <th>实际提审日期</th> <th>版本号</th> <th>需求状态</th> <th>操作</th>';
+        $.each(data['data'], function(i, n) {
+          if (n.is_force == 0){
+        	  var is_force = "否";
+          }
+          else{
+        	  var is_force = "是";
+          }
+          if (n.status == 0){
+        	  var status = "待提测";
+              tbBody += '<tr onclick=gotodetail(' + n.req_id + ')><td>' + n.req_name + "</td>" + "<td>" + is_force +"</td><td>" + n.raise_man + "</td>" + "<td>" + n.raise_time + "</td>" + "<td>" + n.pre_upline_date + "</td>"+ "<td>" + n.upline_time + "</td>" +"<td>" + n.version + "</td>" + "<td>" + status + "</td>"
+              + "<td id=" + n.req_id + ">" + '<button type="button" class="btn btn-primary btn-xs">提测</button>' + "</td></tr>";
+          }else if(n.status == 1){
+        	  var status = "已提测";
+              tbBody += '<tr ><td>' + n.req_name + "</td>" + "<td>" + is_force +"</td><td>" + n.raise_man + "</td>" + "<td>" + n.raise_time + "</td>" + "<td>" + n.pre_upline_date + "</td>"+ "<td>" + n.upline_time + "</td>" +"<td>" + n.version + "</td>" + "<td>" + status + "</td>"
+              + "<td id=" + n.req_id + ">" + '<button type="button" class="btn btn-primary btn-xs" onclick="req_function(' + n.req_id + ',&quot;overtest&quot;)">提审</button>' + "</td></tr>";
+          }else if(n.status == 2){
+        	  var status = "已提审";
+        	  tbBody += '<tr onclick=gotodetail(' + n.req_id + ')><td>' + n.req_name + "</td>" + "<td>" + is_force +"</td><td>" + n.raise_man + "</td>" + "<td>" + n.raise_time + "</td>" + "<td>" + n.pre_upline_date + "</td>"+ "<td>" + n.upline_time + "</td>" +"<td>" + n.version + "</td>" + "<td>" + status + "</td>"
+              + "<td id=" + n.req_id + ">" + '<button type="button" class="btn btn-primary btn-xs">提审通过</button>' + "</td></tr>";
+          }else if (n.status == 3){
+        	  var status = "提审通过";
+        	  tbBody += '<tr onclick=gotodetail(' + n.req_id + ')><td>' + n.req_name + "</td>" + "<td>" + is_force +"</td><td>" + n.raise_man + "</td>" + "<td>" + n.raise_time + "</td>" + "<td>" + n.pre_upline_date + "</td>"+ "<td>" + n.upline_time + "</td>" +"<td>" + n.version + "</td>" + "<td>" + status + "</td>"
+              + "<td id=" + n.req_id + ">" + '<button type="button" class="btn btn-primary btn-xs">发布</button>' + "</td></tr>";
+          }
+          else{
+        	  var status = "已发布";
+        	  tbBody += '<tr onclick=gotodetail(' + n.req_id + ')><td>' + n.req_name + "</td>" + "<td>" + is_force +"</td><td>" + n.raise_man + "</td>" + "<td>" + n.raise_time + "</td>" + "<td>" + n.pre_upline_date + "</td>"+ "<td>" + n.upline_time + "</td>" +"<td>" + n.version + "</td>" + "<td>" + status + "</td>"
+              + "<td id=" + n.req_id + ">" + '<button type="button" class="btn btn-primary btn-xs">详情</button>' + "</td></tr>";
+          }
+          //tbBody += '<tr onclick=gotodetail(' + n.req_id + ')><td>' + n.req_name + "</td>" + "<td>" + is_force +"</td><td>" + n.raise_man + "</td>" + "<td>" + n.raise_time + "</td>" + "<td>" + n.pre_upline_date + "</td>"+ "<td>" + n.upline_time + "</td>" +"<td>" + n.version + "</td>" + "<td>" + status + "</td>"
+          //          + "<td >" + '<button type="button" class="btn btn-primary btn-xs">详情</button>' + "</td></tr>";
+          //alert(tbBody);
+          //$("#tbody_"+seller_id+"_"+product_id).empty().html(tr).append(tbBody);
+          //$("#s_"+seller_id+'_'+product_id).html('查看');
+          $("#test").empty().html(tr).append(tbBody);
+        });
+      });
+}
+</script>
+<script>
+$(":button[href='#']").click(function(){
+	var version = $(this).parent('td').prev('td').prev('td').text();
+	$("input#txt_version2").attr("placeholder",version);
+	$("input#txt_version2").text(version);
+	var preUplineDate = $(this).parent('td').prev('td').prev('td').prev('td').prev('td').prev('td').text();
+	$("input#txt_preUplineDate2").attr("placeholder",preUplineDate);
+	$("input#txt_preUplineDate2").text(preUplineDate);
+	var reqName = $(this).parent('td').parent('tr').children("td:first-child").text();
+	$("input#txt_reqName2").attr("placeholder",reqName);
+	$("input#txt_reqName2").text(reqName);
+	var isForce = $(this).parent('td').parent('tr').children("td:first-child").next('td').next('td').text();
+	if(isForce == "是"){
+		$("select#txt_isForce2").children("option:last-child").attr("selected","selected");
+	}
+	$("#ReqModalDetail").modal('show');
+})
+</script>
+<script>
+//$(document).ready(function(e){req_list('');});
+</script>
+<script>
+$(function() {
+    $('#addNewReqModal').modal({
+       keyboard: true
+    })
+});
+</script>
+<script type="text/javascript">
+   $("#txt_preUplineDate").datepicker({format: 'yyyy-mm-dd'});
+   $("#txt_preUplineDate2").datepicker({format: 'yyyy-mm-dd'});
+</script>
+<script>
+$("#btn_submit").click(function(){
+	var forceflag;
+	if ($("#txt_isForce").val() == "是")
+		{forceflag=1;}
+	else
+		{forceflag=0;}
+	data = { "req_name": $("#txt_reqName").val(),"version":$("#txt_version").val(),"remarks":$("#txt_remarks").val(),"preUplineDate":$("#txt_preUplineDate").val(),
+			"is_force":forceflag};
+	ajaxRequest("/api/add_req","POST","json",data);
+});
+</script>
+<script type="text/javascript">
+function gotodetail(req_id){
+	window.open("/Requirements/"+req_id);
+}
+</script>
+<script type="text/javascript">
+function req_function(req_id,action){
+	data = {"req_id":req_id,"action":action};
+	ajaxRequest("/api/uplineRequirement","POST","json",data);
+	location.reload();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% block content %}
+{% include 'common_head.html' %}
+<body>
+<div id="container" style="width: 550px; height: 400px; margin: 0 auto"></div>
+</body>
+{% endblock %}
+{% block scripts %}
+<script src="../static/highcharts.js"></script>
+<script type="text/javascript">  
+    $(function(){ 
+        Highcharts.setOptions({  
+             global: {  
+                useUTC: false  
+                     }  
+        });
+        //声明报表对象   
+        var chart = new Highcharts.Chart({   
+            chart:{   
+            //将报表对象渲染到层上   
+            renderTo:'container' ,  
+            defaultSeriesType:'spline'  
+        }, //chart end  
+        title:{  
+           text:'CPU监控'         
+        },  
+//        xAxis: {  
+//            type: 'datetime',  
+//            dateTimeLabelFormats: {  
+//              day: '%m-%d'   
+//            }
+//        },  
+        
+        yAxis:{  
+            title:{  
+               text:'实时CPU使用率'             
+            }  
+        },  
+        //设定报表对象的初始数据   
+        series:[{   
+           data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  
+                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  
+                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  
+                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]  
+        }]  
+    });  //Highcharts.Chart end         
+        //获取后台数据  
+        function getForm(){  
+            $.ajax({  
+                 type:"Post",  
+                 //后台获取数据的函数，注意当对该页面重命名时，  
+                  //必须手动更改该选项  
+                   url: "/getData",  
+                   contentType:"application/json; charset=utf-8",  
+                   dataType:"json",  
+                   //成功获取数据  
+                   success:function (data){
+                   var series= chart.series[0];  
+                   series.addPoint(data["y"],false,true);  
+                   chart.redraw();  
+                   },  
+                   //显示错误                                         
+                   error:function (err){  
+                    alert(err + "调用后台程序出现错误，请尝试刷新！");  
+                }  
+             });  
+        }     
+       $(document).ready(function() {   
+           //每隔3秒自动调用方法，实现图表的实时更新   
+           window.setInterval(getForm,5000);                 
+        });           
+    });     
+</script>
+{% endblock %}

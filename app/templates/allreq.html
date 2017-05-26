@@ -1,0 +1,276 @@
+{% include 'common_head.html' %}
+{% block content %}  
+<div class="container">
+<form class="form-horizontal" role="form" id="req">
+	<div class="form-group">
+		<label for="status" class="col-sm-1 control-label">需求状态</label>
+		<div class="col-sm-2" >
+			<select class="form-control" id="status" >
+			<option>请选择</option>
+			{% if basic['status'] == "1" %}
+			<option selected="selected">已提测</option>
+			{% else %}
+			<option>已提测</option>
+			{% endif %}
+			{% if basic['status'] == "2" %}
+			<option selected="selected">测试中</option>
+			{% else %}
+			<option>测试中</option>
+			{% endif %}
+			{% if basic['status'] == "3" %}
+			<option selected="selected">已上线</option>
+			{% else %}
+			<option>已上线</option>
+			{% endif %}
+		</select>
+		</div>
+		<label for="raise_man" class="col-sm-1 control-label">提测人</label>
+		<div class="col-sm-2">
+			{% if basic['raise_man'] != '' %}
+			<input type="text" class="form-control" id="raise_man" 
+				   placeholder={{basic['raise_man']}}>
+			{% else %}
+			<input type="text" class="form-control" id="raise_man" 
+				   placeholder="请输入提测人">
+			{% endif %}
+		</div>
+		<label for="test_man" class="col-sm-1 control-label">测试人</label>
+		<div class="col-sm-2">
+			{% if basic['test_man'] != '' %}
+			<input type="text" class="form-control" id="test_man" 
+				   placeholder={{basic['test_man']}}>
+			{% else %}
+			<input type="text" class="form-control" id="test_man" 
+				   placeholder="请输入测试人">
+			{% endif %}
+		</div>
+		<label for="project" class="col-sm-1 control-label">项目组</label>
+		<div class="col-sm-2">
+			<input type="text" class="form-control" id="project" 
+				   placeholder="微商组" readonly=true>
+		</div>
+	</div>
+	<div class="form-group">
+	<label for="raise_date" class="col-sm-1 control-label">提测时间</label>
+		<div class="col-sm-2">
+			<select class="form-control" id="raise_date">
+			<option>请选择</option>
+			{% if basic["raise_date"] == "1" %}
+			<option selected="selected">一周内</option>
+			{% else %}
+			<option>一周内</option>
+			{% endif %}
+			{% if basic["raise_date"] == "2" %}
+			<option selected="selected">一月内</option>
+			{% else %}
+			<option>一月内</option>
+			{% endif %}
+			{% if basic["raise_date"] == "3" %}
+			<option selected="selected">一年内</option>
+			{% else %}
+			<option>一年内</option>
+			{% endif %}
+		</select>
+		</div>
+	<label for="upline_date" class="col-sm-1 control-label">上线时间</label>
+		<div class="col-sm-2">
+			<select class="form-control" id="upline_date">
+			<option>请选择</option>
+			{% if basic["upline_date"] == "1" %}
+			<option selected="selected">一周内</option>
+			{% else %}
+			<option>一周内</option>
+			{% endif %}
+			{% if basic["upline_date"] == "2" %}
+			<option selected="selected">一月内</option>
+			{% else %}
+			<option>一月内</option>
+			{% endif %}
+			{% if basic["upline_date"] == "3" %}
+			<option selected="selected">一年内</option>
+			{% else %}
+			<option>一年内</option>
+			{% endif %}
+		</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-offset-11 col-sm-2">
+			<button type="button" class="btn btn-default" onclick="resetQuery()">重置</button>
+			<button type="button" class="btn btn-default" onclick="queryFunc()">查询</button>
+		</div>
+	</div>
+</form>
+</div>
+
+<table class="table table-hover">
+<thead>
+<tr>
+<th>需求名称</th>
+<th>提测人</th> 
+<th>提测日期</th>
+<th>测试人</th>
+<th>开测日期</th>
+<th>预计上线日期</th>
+<th>实际上线日期</th>
+<th>需求状态</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+{% for item in result %}
+<tr>
+<!--  
+<td style="width: 28%;" >{{item['name']}}</td>
+-->
+<td>{{item['name']}}</td>
+<td>{{item['raise_man']}}</td>
+<td>{{item['raise_date']}}</td>
+<td>{{item['test_man']}}</td>
+<td>{{item['start_date']}}</td>
+<td></td>
+<td>{{item['upline_date']}}</td>
+
+{% if item['status'] == 1 %}
+<td>已提测</td>
+{% if not current_user.is_authenticated %}
+<td></td>
+{% else %}
+<td><button type="button" class="btn btn-primary btn-xs" onclick=claim({{item['id']}}) >认领</button></td>
+{% endif %}
+{% elif item['status'] == 2 %}
+<td>测试中</td>
+{% if not current_user.is_authenticated %}
+<td></td>
+{% elif item['is_claimed'] == 1 %}
+<td><button id="btn123" type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal">上线</button></td>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title" id="myModalLabel">新增</h4>
+        </div>
+        <div class="modal-body">
+ 
+          <div class="form-group">
+            <label for="txt_departmentname">部门名称</label>
+            <input type="text" name="txt_departmentname" class="form-control" id="txt_departmentname" placeholder="部门名称">
+          </div>
+          <div class="form-group">
+            <label for="txt_parentdepartment">上级部门</label>
+            <input type="text" name="txt_parentdepartment" class="form-control" id="txt_parentdepartment" placeholder="上级部门">
+          </div>
+          <div class="form-group">
+            <label for="txt_departmentlevel">部门级别</label>
+            <input type="text" name="txt_departmentlevel" class="form-control" id="txt_departmentlevel" placeholder="部门级别">
+          </div>
+          <div class="form-group">
+            <label for="txt_statu">描述</label>
+            <input type="text" name="txt_statu" class="form-control" id="txt_statu" placeholder="状态">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+          <button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% else %}
+<td><button type="button" class="btn btn-primary btn-xs" onclick=claim({{item['id']}}) >认领</button></td>	
+{% endif %}
+{% else %}
+<td>已上线</td><td></td>
+{% endif %}
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+
+<div class="pull-right">
+<ul class="pagination">
+{% if basic['pageNum'] == 1 %}
+    <li class="disabled"><a href="#" >&laquo;</a></li>
+{% else %}
+    <li><a href="#" onclick=lastFunc()>&laquo;</a></li>
+{% endif %}
+{% if basic['pageNum']%5 != 0 %}
+{% for i in range(5) %}
+{% if basic['pageNum']%5 == (i+1)%5 %}
+    <li class="active"><a href="javascript:void(0)" onclick=gotoFunc({{basic['pageNum']}})>{{basic['pageNum']}}</a></li>
+{% else %}
+{% if (basic['pageNum']/5)|int*5+i+1 <= basic['totalNum'] %}
+    <li><a href="javascript:void(0)" onclick=gotoFunc({{(basic['pageNum']/5)|int*5+i+1}})>{{(basic['pageNum']/5)|int*5+i+1}}</a></li>
+{% endif %}
+{% endif %}
+{% endfor %}
+{% else %}
+<li><a href="javascript:void(0)" onclick=gotoFunc({{basic['pageNum']-4}})>{{basic['pageNum']-4}}</a></li>
+<li><a href="javascript:void(0)" onclick=gotoFunc({{basic['pageNum']-3}})>{{basic['pageNum']-3}}</a></li>
+<li><a href="javascript:void(0)" onclick=gotoFunc({{basic['pageNum']-2}})>{{basic['pageNum']-2}}</a></li>
+<li><a href="javascript:void(0)" onclick=gotoFunc({{basic['pageNum']-1}})>{{basic['pageNum']-1}}</a></li>
+<li class="active"><a href="javascript:void(0)" onclick=gotoFunc({{basic['pageNum']}})>{{basic['pageNum']}}</a></li>
+{% endif %}
+
+
+{% if basic['totalNum'] == basic['pageNum'] %}
+    <li class="disabled"><a href="#">&raquo;</a></li>
+{% else %}
+    <li><a href="#" onclick=nextFunc()>&raquo;</a></li>
+{% endif %}
+   </ul>
+</div>
+<div id="datetimepicker" class="input-append date">  
+    <input type="text"></input>  
+    <span class="add-on">  
+        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>  
+    </span>  
+</div>
+<div class="input-append date" id="dp3" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
+  <input class="span2" size="16" type="text" value="12-02-2012" readonly>
+  <span class="add-on"><span class="glyphicon glyphicon glyphicon-th"></span></span>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="../static/jquery.js"></script>
+<script src="../static/js/public.js"></script>
+<script src="../static/js/bootstrap-datepicker.js"></script>
+<script>
+function resetQuery(){
+	document.getElementById("status").value="请选择";
+	document.getElementById("raise_man").value="";
+	document.getElementById("test_man").value="";
+	document.getElementById("raise_date").value="请选择";
+	document.getElementById("upline_date").value="请选择";
+}
+</script>
+<script type="text/javascript">  
+      $('#dp3').datepicker({  
+        format: 'MM-dd-yyyy',  
+        language: 'en',  
+        pickDate: true,  
+        pickTime: true,  
+        hourStep: 1,  
+        minuteStep: 15,  
+        secondStep: 30,  
+        inputMask: true
+      });  
+</script>
+<script>
+function ShowImageInModal() {
+	alert(141);
+        $('#myModal').modal('show');
+
+}
+</script>
+<script>
+$(function() {
+    $('#myModal').modal({
+        keyboard: true
+    })
+});
+</script>
+{% endblock %}}

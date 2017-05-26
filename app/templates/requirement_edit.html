@@ -1,0 +1,60 @@
+{% include 'common_head.html' %}
+{% block content %}
+<div class="col-md-6 col-md-offset-3">
+<form class="form-horizontal" role="form">
+	<div class="form-group">
+		<label class="col-md-2 control-label text-left">需求名称</label>
+		<div class="col-md-10">
+			<p class="form-control-static">{{req['req_name']}}</p>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="inputPassword" class="col-md-2 control-label text-left">需求版本</label>
+		<div class="col-md-10">
+			<input class="form-control" id="inputPassword" 
+				   placeholder="{{req['version']}}" value="{{req['version']}}">
+		</div>
+	</div>
+	<div class="form-group">
+            <label for="txt_isForce2" class="col-md-2 control-label text-left">是否强升</label>
+            <div class="col-md-10">
+            <select class="form-control" id="txt_isForce2" >
+			<option>否</option>
+			{% if req['is_force'] ==1 %}
+			<option selectd="selected">是</option>
+			{% else %}
+			<option >是</option>
+			{% endif %}
+			</select>
+          </div>
+	</div>
+	<div class="form-group">
+            <label for="preUplineDate" class="col-md-2 control-label text-left">预计提审</label>
+            <div class="col-md-10">
+            <input type="text" name="preUplineDate" class="form-control" id="preUplineDate" placeholder="{{req['pre_upline_date']}}" value="{{req['pre_upline_date']}}">
+            </div>
+          </div>
+    <div class="form-group">
+            <label for="remarks" class="col-md-2 control-label ">备注</label>
+            <div class="col-md-10">
+            <input type="text" name="preUplineDate" class="form-control" id="remarks" placeholder="{{req['remarks']}}" value="{{req['remarks']}}">
+            </div>
+          </div>
+<div class="form-group">
+    <div class="col-md-2 col-md-offset-6">
+      <button type="submit" class="btn btn-default">保存</button>
+    </div>
+          <div class="col-md-2 col-md-offset-10">
+      <button type="submit" class="btn btn-default">取消</button>
+      </div>
+  </div>
+</form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="../static/js/public.js"></script>
+<script src="../static/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript">
+   $("#preUplineDate").datepicker({format: 'yyyy-mm-dd'});
+</script>
+{% endblock %}

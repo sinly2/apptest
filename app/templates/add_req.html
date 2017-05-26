@@ -1,0 +1,11 @@
+{% include 'common_head.html' %}
+{% block content %}
+<form action="add_req" method="post">
+  <p>需求名称: <input type="text" name="req_name" /></p>
+  <p>需求内容: <input type="text" name="content" /></p>
+  <p>版本号: <input type="text" name="version" /></p>
+  <p>细项: <input type="text" name="details" /></p>
+  <p>备注: <input type="text" name="remarks" /></p>
+  <input type="submit" value="Submit" />
+</form>
+{% endblock %}
